@@ -22,7 +22,11 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 def get_db():
-    conn = psycopg2.connect(os.environ["DATABASE_URL"])
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("A variável DATABASE_URL não foi configurada.")
+
+    conn = psycopg2.connect(database_url, connect_timeout=10)
     return conn
 
 
@@ -320,30 +324,21 @@ def historico(produto_id):
     )
 
     movimentos = cursor.fetchall()
-
     cursor.close()
     conn.close()
-
-    return render_template(
-        "historico.html",
-        produto=produto,
-        movimentos=movimentos
-    )
+    return render_template("historico.html", produto=produto, movimentos=movimentos)
 
 
 @app.route("/historico/limpar", methods=["POST"])
 def limpar_historico():
-
     conn = get_db()
     cursor = get_cursor(conn)
-
-    cursor.execute("DELETE FROM movimentos")
-
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
+    try:
+        cursor.execute("DELETE FROM movimentos")
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
     return redirect(url_for("index"))
 
 
