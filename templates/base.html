@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Controle de Estoque{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-mark">E</span><span>Estoque</span>
+      </div>
+      <nav>
+        <a
+          href="{{ url_for('index') }}"
+          class="nav-item {% if request.endpoint == 'index' %}active{% endif %}"
+          ><span>⌂</span> Visão geral</a
+        >
+        <a href="{{ url_for('index') }}#produtos" class="nav-item"
+          ><span>▦</span> Produtos</a
+        >
+        <a
+          href="{{ url_for('novo_produto') }}"
+          class="nav-item {% if request.endpoint == 'novo_produto' %}active{% endif %}"
+          ><span>＋</span> Novo produto</a
+        >
+      </nav>
+      <div class="sidebar-footer">
+        CONTROLE DE ESTOQUE<br /><strong>Operação diária</strong>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-inner">{% block content %}{% endblock %}</div>
+    </main>
+  </body>
+</html>

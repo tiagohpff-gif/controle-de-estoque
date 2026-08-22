@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block title %}Histórico - {{ produto.nome }}{%
+endblock %} {% block content %}
+<div class="topbar">
+  <div>
+    <p class="eyebrow">MOVIMENTAÇÕES</p>
+    <h1 class="page-title">Histórico de {{ produto.nome }}</h1>
+  </div>
+  <a href="{{ url_for('index') }}" class="btn-novo">← Voltar ao painel</a>
+</div>
+<div class="product-list">
+  <table class="tabela-historico">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Quantidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in movimentos %}
+      <tr>
+        <td>{{ m.data }}</td>
+        <td
+          class="{{ 'tipo-entrada' if m.tipo == 'entrada' else 'tipo-saida' }}"
+        >
+          {{ "Entrada" if m.tipo == "entrada" else "Saída" }}
+        </td>
+        <td>{{ m.quantidade }} unidades</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="3">Nenhuma movimentação registrada ainda.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

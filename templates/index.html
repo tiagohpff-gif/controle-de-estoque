@@ -1,0 +1,108 @@
+{% extends "base.html" %} {% block title %}Dashboard - Estoque{% endblock %} {%
+block content %}
+
+<header class="topbar">
+  <div>
+    <p class="eyebrow">CENTRAL DE OPERAÇÕES</p>
+    <h1 class="page-title">Visão geral</h1>
+    <p class="page-subtitle">Acompanhe o estoque e registre movimentações.</p>
+  </div>
+  <a href="{{ url_for('novo_produto') }}" class="btn-novo"
+    ><span>＋</span> Novo produto</a
+  >
+</header>
+
+<div class="stats-row">
+  <div class="stat-card stat-blue">
+    <div class="stat-icon">▦</div>
+    <div class="stat-info">
+      <div class="stat-numero">{{ total_produtos }}</div>
+      <div class="stat-label">Produtos</div>
+    </div>
+  </div>
+
+  <div class="stat-card stat-green">
+    <div class="stat-icon">◈</div>
+    <div class="stat-info">
+      <div class="stat-numero">{{ estoque_total }}</div>
+      <div class="stat-label">Estoque Total</div>
+    </div>
+  </div>
+
+  <div class="stat-card stat-orange">
+    <div class="stat-icon">↗</div>
+    <div class="stat-info">
+      <div class="stat-numero">{{ total_entradas }}</div>
+      <div class="stat-label">Entradas</div>
+    </div>
+  </div>
+
+  <div class="stat-card stat-red">
+    <div class="stat-icon">↘</div>
+    <div class="stat-info">
+      <div class="stat-numero">{{ total_saidas }}</div>
+      <div class="stat-label">Saídas</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-header" id="produtos">
+  <h2>Produtos</h2>
+  <div class="section-actions">
+    <span class="section-count">{{ total_produtos }} itens</span>
+    <form
+      action="{{ url_for('limpar_historico') }}"
+      method="post"
+      onsubmit="
+        return confirm(
+          'Tem certeza que deseja apagar todo o histórico? Essa ação não pode ser desfeita.',
+        );
+      "
+    >
+      <button type="submit" class="btn-apagar-historico">
+        Apagar histórico
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="grid">
+  {% for produto in produtos %}
+  <div class="card">
+    {% if produto.imagem %}
+    <img
+      src="{{ url_for('static', filename='images/' + produto.imagem) }}"
+      alt="{{ produto.nome }}"
+    />
+    {% else %}
+    <div class="sem-imagem">Sem imagem</div>
+    {% endif %}
+
+    <h2>{{ produto.nome }}</h2>
+    <p class="quantidade">
+      Estoque: <strong>{{ produto.quantidade }}</strong> unidades
+    </p>
+
+    <form action="{{ url_for('movimentar') }}" method="post" class="form-mov">
+      <input type="hidden" name="produto_id" value="{{ produto.id }}" />
+      <input type="number" name="quantidade" min="1" value="1" required />
+      <div class="botoes">
+        <button type="submit" name="tipo" value="entrada" class="btn-entrada">
+          Entrada
+        </button>
+        <button type="submit" name="tipo" value="saida" class="btn-saida">
+          Saída
+        </button>
+      </div>
+    </form>
+
+    <a
+      href="{{ url_for('historico', produto_id=produto.id) }}"
+      class="link-historico"
+      >Ver histórico</a
+    >
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

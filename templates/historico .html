@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico - {{ produto.nome }}{% endblock %}
+
+{% block content %}
+
+    <h1 class="page-title">Histórico - {{ produto.nome }}</h1>
+
+    <table class="tabela-historico">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Quantidade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in movimentos %}
+            <tr>
+                <td>{{ m.data }}</td>
+                <td class="{{ 'tipo-entrada' if m.tipo == 'entrada' else 'tipo-saida' }}">
+                    {{ "Entrada" if m.tipo == "entrada" else "Saída" }}
+                </td>
+                <td>{{ m.quantidade }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">Nenhuma movimentação registrada ainda.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

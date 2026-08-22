@@ -1,0 +1,271 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f4f5f7;
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 230px;
+    flex-shrink: 0;
+    background: #1e2a38;
+    color: white;
+    padding: 20px 0;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid #33475b;
+    margin-bottom: 10px;
+}
+
+.nav-item {
+    display: block;
+    padding: 12px 20px;
+    color: #c6cfd8;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.nav-item:hover {
+    background: #29394d;
+    color: white;
+}
+
+.nav-item.active {
+    background: #29394d;
+    color: white;
+    border-left: 3px solid #4e8cff;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 30px 40px;
+}
+
+.content-inner {
+    width: 100%;
+    max-width: 1100px;
+}
+
+.page-title {
+    color: #222;
+    margin-bottom: 24px;
+    font-size: 26px;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.stat-icon {
+    font-size: 28px;
+}
+
+.stat-numero {
+    font-size: 26px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+.stat-blue   { background: #4e8cff; }
+.stat-green  { background: #1cc88a; }
+.stat-orange { background: #f6a934; }
+.stat-red    { background: #e05260; }
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.section-header h2 {
+    color: #333;
+    font-size: 18px;
+}
+
+.btn-novo {
+    background: #1e2a38;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.card img {
+    width: 100%;
+    height: 140px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.sem-imagem {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee;
+    color: #999;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.quantidade {
+    margin: 8px 0 12px;
+    color: #444;
+}
+
+.form-mov {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-mov input[type="number"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.botoes {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-entrada, .btn-saida {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-entrada { background: #2e7d32; }
+.btn-saida { background: #c62828; }
+
+.link-historico {
+    display: block;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555;
+}
+
+.form-produto {
+    background: white;
+    max-width: 400px;
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0 auto;
+}
+
+.form-produto input {
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.tabela-historico {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabela-historico th, .tabela-historico td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.tipo-entrada { color: #2e7d32; font-weight: bold; }
+.tipo-saida { color: #c62828; font-weight: bold; }
+
+/* ===== TELAS PEQUENAS DEITADAS (celular/tablet em landscape) =====
+   Só entra em ação em telas com largura até 900px - um monitor
+   de computador nunca cai aqui, mesmo sendo "landscape" também. */
+@media (max-width: 900px) and (orientation: landscape) {
+    .sidebar { width: 190px; }
+    .nav-item { font-size: 13px; padding: 12px 18px; text-align: left; }
+    .main-content { padding: 20px 30px; }
+    .stats-row { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .stat-card { padding: 14px; }
+    .stat-numero { font-size: 20px; }
+}
+
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 450px) {
+    .sidebar { width: 60px; }
+    .nav-item { font-size: 0; padding: 14px 0; text-align: center; }
+}
+
+/* ===== TELA EM PÉ (retrato/portrait) - celular na vertical ===== */
+@media (max-width: 900px) and (orientation: portrait) {
+    body { flex-direction: column; }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+    }
+    .logo { display: none; }
+    nav { display: flex; }
+    .nav-item { white-space: nowrap; padding: 10px 14px; }
+    .main-content { padding: 20px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
