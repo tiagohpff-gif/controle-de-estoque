@@ -19,6 +19,7 @@ UPLOAD_FOLDER = os.path.join(
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+database_initialized = False
 
 
 def get_db():
@@ -87,6 +88,14 @@ def init_db():
     conn.commit()
     cursor.close()
     conn.close()
+
+
+@app.before_request
+def ensure_database():
+    global database_initialized
+    if not database_initialized:
+        init_db()
+        database_initialized = True
 
 
 def allowed_image(filename):
