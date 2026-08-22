@@ -98,6 +98,15 @@ nav {
   max-width: 1120px;
   width: 100%;
 }
+.alerta {
+  border: 1px solid #e6b4ac;
+  border-radius: 5px;
+  color: #9d4438;
+  background: #fce5e1;
+  font-size: 13px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+}
 .topbar {
   align-items: center;
   display: flex;

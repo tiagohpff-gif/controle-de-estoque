@@ -1,16 +1,23 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, abort, flash, render_template, request, redirect, url_for
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "estoque-dev-key")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "estoque.db")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "images")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
+ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+def allowed_image(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
 
 
 def get_db():
@@ -84,21 +91,37 @@ def index():
 
 @app.route("/movimentar", methods=["POST"])
 def movimentar():
-    produto_id = request.form["produto_id"]
-    tipo = request.form["tipo"]
-    quantidade = int(request.form["quantidade"])
+    produto_id = request.form.get("produto_id")
+    tipo = request.form.get("tipo")
+    if not produto_id:
+        abort(400)
+    try:
+        quantidade = int(request.form["quantidade"])
+    except (KeyError, TypeError, ValueError):
+        flash("Informe uma quantidade válida.", "erro")
+        return redirect(url_for("index"))
+
+    if quantidade < 1 or tipo not in {"entrada", "saida"}:
+        flash("A quantidade deve ser maior que zero.", "erro")
+        return redirect(url_for("index"))
 
     conn = get_db()
     produto = conn.execute(
         "SELECT * FROM produtos WHERE id = ?", (produto_id,)
     ).fetchone()
 
+    if produto is None:
+        conn.close()
+        abort(404)
+
     if tipo == "entrada":
         nova_quantidade = produto["quantidade"] + quantidade
     else:
+        if quantidade > produto["quantidade"]:
+            conn.close()
+            flash("A saída não pode ser maior que o estoque disponível.", "erro")
+            return redirect(url_for("index"))
         nova_quantidade = produto["quantidade"] - quantidade
-        if nova_quantidade < 0:
-            nova_quantidade = 0
 
     conn.execute(
         "UPDATE produtos SET quantidade = ? WHERE id = ?",
@@ -117,19 +140,30 @@ def movimentar():
 @app.route("/produto/novo", methods=["GET", "POST"])
 def novo_produto():
     if request.method == "POST":
-        nome = request.form["nome"]
+        nome = request.form.get("nome", "").strip()
+        if not nome:
+            flash("Informe o nome do produto.", "erro")
+            return render_template("add_product.html"), 400
         imagem_file = request.files.get("imagem")
         nome_arquivo = None
 
         if imagem_file and imagem_file.filename:
+            if not allowed_image(imagem_file.filename):
+                flash("Envie uma imagem PNG, JPG, JPEG, GIF ou WEBP.", "erro")
+                return render_template("add_product.html"), 400
             nome_arquivo = secure_filename(imagem_file.filename)
             imagem_file.save(os.path.join(app.config["UPLOAD_FOLDER"], nome_arquivo))
 
         conn = get_db()
-        conn.execute(
-            "INSERT INTO produtos (nome, imagem, quantidade) VALUES (?, ?, 0)",
-            (nome, nome_arquivo)
-        )
+        try:
+            conn.execute(
+                "INSERT INTO produtos (nome, imagem, quantidade) VALUES (?, ?, 0)",
+                (nome, nome_arquivo)
+            )
+        except sqlite3.IntegrityError:
+            conn.close()
+            flash("Já existe um produto com esse nome.", "erro")
+            return render_template("add_product.html"), 400
         conn.commit()
         conn.close()
         return redirect(url_for("index"))
@@ -143,6 +177,9 @@ def historico(produto_id):
     produto = conn.execute(
         "SELECT * FROM produtos WHERE id = ?", (produto_id,)
     ).fetchone()
+    if produto is None:
+        conn.close()
+        abort(404)
     movimentos = conn.execute(
         "SELECT * FROM movimentos WHERE produto_id = ? ORDER BY id DESC",
         (produto_id,)
